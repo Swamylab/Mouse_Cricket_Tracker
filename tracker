@@ -46,7 +46,9 @@ for j=1:size(m.Data,1)
                 distmoved = ((mouse(1)-datastructin.cricketxy(1,j-1))^2 + (mouse(2)-datastructin.cricketxy(2,j-1))^2)^0.5;
                 if(distmoved > distcutoff)
                     distmoved2 = ((nextmouse(1) -datastructin.cricketxy(1,j-1))^2 + (nextmouse(2)-datastructin.cricketxy(2,j-1))^2)^0.5;
-                    if(distmoved2 < distmoved || distmoved2 < 200)
+                    if distmoved2 == 0
+                        
+                    elseif(distmoved2 < distmoved || distmoved2 < 200)(distmoved2 < distmoved || distmoved2 < 200)
                         mouse = nextmouse;
                         Area(j) = nextArea;
                         datastructin.cricketxy(:,j) = nextmouse;
