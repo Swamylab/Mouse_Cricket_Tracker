@@ -1,0 +1,64 @@
+function [datastructin] = tracker(m,threshold,Distcutoff,animal,datastructin)
+% default values
+% distcutoff = 50
+Area = zeros(size(m.Data,1),1);
+% mice = zeros(2,size(m.Data,1));
+% datastructin.maskmovie = false(size(m.Data(1).x,1),size(m.Data(1).x,2),size(m.Data,1));
+for j=1:size(m.Data,1)
+    % copy the code from the section 1 to get mask for every frame
+    bwim = double(m.Data(j).x(:,:)./255); % scale pixel values from 0 to 1
+    %     threshold = .47; % set a threshold |||||||| .45 worked
+    Mask = (bwim <= threshold);%create a mask
+    s = regionprops(Mask, 'area', 'centroid');  %changed to mask, used to be L??
+    segmentedAreas = zeros(length(s),1);
+    for a = 1:length(s) % pulled out each area one at a time
+        segmentedAreas(a) = s(a).Area;
+    end
+    [a, mousecentroid] = sort(segmentedAreas); % mouse centroid
+    %    s1 = s(mousecentroid);
+    switch animal
+        case 'cricket'
+            if (size(a,1)==1)
+                mouse=s(1).Centroid;
+                Area(j) = s(1).Area;
+                datastructin.cricketxy(:,j) = s(1).Centroid;
+            elseif(size(a,1)==2)
+                mouse = s(mousecentroid(size(a,1)-1)).Centroid;
+                Area(j) = s(mousecentroid(size(a,1)-1)).Area;
+                nextmouse = mouse;
+                nextArea = Area(j);
+                datastructin.cricketxy(:,j) = s(mousecentroid(size(a,1)-1)).Centroid;
+            elseif(size(a,1)> 2)
+                mouse = s(mousecentroid(size(a,1)-1)).Centroid;
+                Area(j) = s(mousecentroid(size(a,1)-1)).Area;
+                nextmouse = s(mousecentroid(size(a,1)-2)).Centroid;
+                nextArea = s(mousecentroid(size(a,1)-2)).Area;
+                datastructin.cricketxy(:,j) =s(mousecentroid(size(a,1)-1)).Centroid;
+            end
+            if(j > 1)
+                if( Area(j) <170)
+                    mouse = [NaN,NaN];
+                    datastructin.cricketxy(:,j) = [NaN,NaN];
+                    distcutoff = 10000;
+                else
+                    distcutoff = Distcutoff;
+                end
+                distmoved = ((mouse(1)-datastructin.cricketxy(1,j-1))^2 + (mouse(2)-datastructin.cricketxy(2,j-1))^2)^0.5;
+                if(distmoved > distcutoff)
+                    distmoved2 = ((nextmouse(1) -datastructin.cricketxy(1,j-1))^2 + (nextmouse(2)-datastructin.cricketxy(2,j-1))^2)^0.5;
+                    if(distmoved2 < distmoved || distmoved2 < 200)
+                        mouse = nextmouse;
+                        Area(j) = nextArea;
+                        datastructin.cricketxy(:,j) = nextmouse;
+                    end
+                end
+            end
+        case 'mouse'
+            if(isempty(a) == 1)
+             datastructin.mousexy(:,j) = [NaN,NaN];    
+            else
+             mouse = s(mousecentroid(size(a,1))).Centroid;             
+             datastructin.mousexy(:,j) = s(mousecentroid(size(a,1))).Centroid;
+            end
+    end
+end
