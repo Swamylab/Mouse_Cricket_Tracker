@@ -10,10 +10,10 @@
         [crickdata(i).movie,m] = movieloader(names(i).name); % run movieloader to get the b&w movie memmapped file and its .dat file
         b = toc
         tic;
-        [crickdata(i)] = tracker4(m,.45,50,'mouse',crickdata(i)); %g became crickdata(i).movie
+        [crickdata(i)] = tracker(m,.45,50,'mouse',crickdata(i)); %g became crickdata(i).movie
         c = toc
         tic;
-        [crickdata(i)] = tracker4(m,.45,50,'cricket',crickdata(i));
+        [crickdata(i)] = tracker(m,.45,50,'cricket',crickdata(i));
         d = toc
     end
     save('summary20171109','crickdata','-v7.3');
