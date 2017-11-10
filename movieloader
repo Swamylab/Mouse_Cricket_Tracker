@@ -1,0 +1,18 @@
+function [mname,m] =  movieloader(filename)
+%% new
+    v = VideoReader(filename); % open video object
+    mname = strcat(filename,'.dat');% make a datfile to contain b&w movie
+    if(exist(mname,'file') ~= 0)
+       m = memmapfile(mname,'Format',{'uint8',[720 1280 1],'x'},'Writable',true) ; 
+    else
+        fileID = fopen(mname,'w');
+        while hasFrame(v) 
+            test = readFrame(v,'native');
+            test2 = test(:,:,1);
+            fwrite(fileID,test2);
+        end
+        m = memmapfile(mname,'Format',{'uint8',[720 1280 1],'x'},'Writable',true) ;
+        clear v;
+    end
+
+end
