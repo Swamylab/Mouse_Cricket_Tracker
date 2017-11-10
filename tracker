@@ -1,4 +1,4 @@
-function [datastructin] = tracker(m,threshold,Distcutoff,animal,datastructin)
+function [datastructin] = tracker4(m,threshold,Distcutoff,animal,datastructin)
 % default values
 % distcutoff = 50
 Area = zeros(size(m.Data,1),1);
@@ -6,7 +6,7 @@ Area = zeros(size(m.Data,1),1);
 % datastructin.maskmovie = false(size(m.Data(1).x,1),size(m.Data(1).x,2),size(m.Data,1));
 for j=1:size(m.Data,1)
     % copy the code from the section 1 to get mask for every frame
-    bwim = double(m.Data(j).x(:,:)./255); % scale pixel values from 0 to 1
+    bwim = double(m.Data(j).x(50:end,:)./255); % scale pixel values from 0 to 1
     %     threshold = .47; % set a threshold |||||||| .45 worked
     Mask = (bwim <= threshold);%create a mask
     s = regionprops(Mask, 'area', 'centroid');  %changed to mask, used to be L??
